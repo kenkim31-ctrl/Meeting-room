@@ -187,7 +187,7 @@ catch(e) { cb(e, {}); }
 cb(new Error("HTTP "+xhr.status), {});
 }
 };
-xhr.ON-ERROR = function() { cb(new Error("Network error"), {}); };
+xhr.onerror = function() { cb(new Error("Network error"), {}); };
 xhr.send();
 }
 
@@ -200,10 +200,10 @@ xhr.open("DELETE", url, true);
 xhr.open("PUT", url, true);
 xhr.setRequestHeader("Content-Type","application/json");
 }
-xhr.ON-LOAD = function() {
+xhr.onload = function() {
 cb((xhr.status===200||xhr.status===204) ? null : new Error("HTTP "+xhr.status));
 };
-xhr.ON-ERROR = function() { cb(new Error("Network error")); };
+xhr.onerror = function() { cb(new Error("Network error")); };
 xhr.send(value===null ? null : JSON.stringify(value));
 }
 
@@ -238,12 +238,12 @@ buildTabs();
 startPoll();
 }
 
-document.getElementById("lb").ON-CLICK = login;
-document.getElementById("ni").ON-KEY-DOWN = function(e) {
+document.getElementById("lb").onclick = login;
+document.getElementById("ni").onkeydown = function(e) {
 if (e.key === "Enter") login();
 };
 
-document.getElementById("logoutBtn").ON-CLICK = function() {
+document.getElementById("logoutBtn").onclick = function() {
 stopPoll();
 userName = "";
 document.getElementById("app-screen").style.display = "none";
@@ -260,7 +260,7 @@ for (var i = 0; i < dates.length; i++) {
 var b = document.createElement("button");
 b.className = "dtab" + (d===selDate ? " active" : "");
 b.textContent = dateLabel(d);
-b.ON-CLICK = function() {
+b.onclick = function() {
 selDate = d;
 buildTabs();
 startPoll();
@@ -311,9 +311,9 @@ s.innerHTML = '<div class="slot-h" style="color:'+fc+'">'+fmtH(mins)+'</div>'
 : bk ? '<div class="slot-u" style="color:'+fc+'">'+(mine?"내 예약":bk.user)+'</div>' : "");
 
 if (!blocked && !other) {
-s.ON-MOUSEOVER = function() { if (!bk) s.style.background="#EFF6FF"; };
-s.ON-MOUSEOUT = function() { if (!bk) s.style.background="#F8FAFC"; };
-s.ON-CLICK = function() { openModal(rm, mins, bk, mine); };
+s.onmouseover = function() { if (!bk) s.style.background="#EFF6FF"; };
+s.onmouseout = function() { if (!bk) s.style.background="#F8FAFC"; };
+s.onclick = function() { openModal(rm, mins, bk, mine); };
 }
 sw.appendChild(s);
 })(SLOTS[hi], room);
@@ -342,9 +342,9 @@ document.getElementById("mbg").classList.remove("show");
 pending = null;
 }
 
-document.getElementById("mclose").ON-CLICK = closeModal;
-document.getElementById("mbg").ON-CLICK = function(e) { if(e.target===this) closeModal(); };
-document.getElementById("mconfirm").ON-CLICK = function() {
+document.getElementById("mclose").onclick = closeModal;
+document.getElementById("mbg").onclick = function(e) { if(e.target===this) closeModal(); };
+document.getElementById("mconfirm").onclick = function() {
 if (!pending) return;
 var type = pending.type;
 var room = pending.room;
