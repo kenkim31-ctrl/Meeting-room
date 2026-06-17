@@ -99,115 +99,117 @@ main { max-width:900px; margin:0 auto; padding:18px 12px; }
 <body>
 
 <div id="login-screen">
-  <div class="login-card">
-    <div style="font-size:36px">🏢</div>
-    <h1>A조 회의실 예약</h1>
-    <p>이름을 입력하고 시작하세요</p>
-    <input id="ni" type="text" placeholder="이름 입력" maxlength="20"/>
-    <button id="lb">시작하기</button>
-  </div>
+<div class="login-card">
+<div style="font-size:36px">🏢</div>
+<h1>A조 업무 관리</h1>
+<p>비밀번호를 입력하고 입장하세요</p>
+<input id="ni" type="password" inputmode="numeric" placeholder="비밀번호 4자리" maxlength="4"/>
+<button id="lb">입장하기</button>
+</div>
 </div>
 
 <div id="app-screen">
-  <header>
-    <div class="hl">
-      <span style="font-size:17px">🏢</span>
-      <h2>A조 업무관리</h2>
-      <span id="sbadge" class="badge err">🔴 연결 중...</span>
-    </div>
-    <div class="hr">
-      <div class="avatar" id="avc"></div>
-      <span class="uname" id="hname"></span>
-      <button class="chg" id="logoutBtn">변경</button>
-    </div>
-  </header>
+<header>
+<div class="hl">
+<span style="font-size:17px">🏢</span>
+<h2>A조 업무관리</h2>
+<span id="sbadge" class="badge err">🔴 연결 중...</span>
+</div>
+<div class="hr">
+<button class="chg" id="logoutBtn">나가기</button>
+</div>
+</header>
 
-  <div class="tabbar">
-    <div class="tab active" id="tab-room" onclick="switchTab('room')">회의실 예약</div>
-    <div class="tab" id="tab-att" onclick="switchTab('att')">근태 관리</div>
-  </div>
+<div class="tabbar">
+<div class="tab active" id="tab-room" onclick="switchTab('room')">회의실 예약</div>
+<div class="tab" id="tab-att" onclick="switchTab('att')">근태 관리</div>
+</div>
 
-  <main>
-    <!-- 회의실 예약 페이지 -->
-    <div class="page active" id="page-room">
-      <div class="dtabs" id="dtabs"></div>
-      <div class="legend">
-        <div style="display:flex;align-items:center;gap:4px"><div class="ldot" style="background:#F8FAFC;border-color:#E2E8F0"></div>예약 가능</div>
-        <div style="display:flex;align-items:center;gap:4px"><div class="ldot" style="background:#DBEAFE;border-color:#2563EB"></div>내 예약</div>
-        <div style="display:flex;align-items:center;gap:4px"><div class="ldot" style="background:#FEF2F2;border-color:#FECACA"></div>타인 예약</div>
-        <div style="display:flex;align-items:center;gap:4px"><div class="ldot" style="background:#F1F5F9;border-color:#CBD5E1"></div>예약 불가</div>
-      </div>
-      <div id="spinner">데이터 불러오는 중...</div>
-      <div class="rooms" id="rooms"></div>
-    </div>
+<main>
+<!-- 회의실 예약 페이지 -->
+<div class="page active" id="page-room">
+<div class="dtabs" id="dtabs"></div>
+<div class="legend">
+<div style="display:flex;align-items:center;gap:4px"><div class="ldot" style="background:#F8FAFC;border-color:#E2E8F0"></div>예약 가능</div>
+<div style="display:flex;align-items:center;gap:4px"><div class="ldot" style="background:#DBEAFE;border-color:#2563EB"></div>예약됨</div>
+<div style="display:flex;align-items:center;gap:4px"><div class="ldot" style="background:#F1F5F9;border-color:#CBD5E1"></div>예약 불가</div>
+</div>
+<div id="spinner">데이터 불러오는 중...</div>
+<div class="rooms" id="rooms"></div>
+</div>
 
-    <!-- 근태 관리 페이지 -->
-    <div class="page" id="page-att">
-      <div class="cal-nav">
-        <button id="prevM">‹</button>
-        <div class="cal-title" id="calTitle"></div>
-        <button id="nextM">›</button>
-      </div>
-      <div class="att-legend" id="attLegend"></div>
-      <div class="cal">
-        <div class="cal-week">
-          <div class="cal-wd sun">일</div><div class="cal-wd">월</div><div class="cal-wd">화</div>
-          <div class="cal-wd">수</div><div class="cal-wd">목</div><div class="cal-wd">금</div><div class="cal-wd sat">토</div>
-        </div>
-        <div class="cal-grid" id="calGrid"></div>
-      </div>
-    </div>
-  </main>
+<!-- 근태 관리 페이지 -->
+<div class="page" id="page-att">
+<div class="cal-nav">
+<button id="prevM">‹</button>
+<div class="cal-title" id="calTitle"></div>
+<button id="nextM">›</button>
+</div>
+<div class="att-legend" id="attLegend"></div>
+<div class="cal">
+<div class="cal-week">
+<div class="cal-wd sun">일</div><div class="cal-wd">월</div><div class="cal-wd">화</div>
+<div class="cal-wd">수</div><div class="cal-wd">목</div><div class="cal-wd">금</div><div class="cal-wd sat">토</div>
+</div>
+<div class="cal-grid" id="calGrid"></div>
+</div>
+</div>
+</main>
 </div>
 
 <!-- 회의실 모달 -->
 <div class="mbg" id="mbg">
-  <div class="modal">
-    <div class="mico" id="mico"></div>
-    <h3 id="mtitle"></h3>
-    <p id="mbody"></p>
-    <div class="mbtns">
-      <button class="bcl" id="mclose">닫기</button>
-      <button id="mconfirm"></button>
-    </div>
-  </div>
+<div class="modal">
+<div class="mico" id="mico"></div>
+<h3 id="mtitle"></h3>
+<p id="mbody"></p>
+<input id="mname" type="text" maxlength="30" placeholder="회의명 / 예약자 입력"
+style="width:100%;padding:11px 13px;font-size:14px;border:1.5px solid #E2E8F0;border-radius:8px;outline:none;margin-bottom:16px;font-family:inherit;display:none"/>
+<div class="mbtns">
+<button class="bcl" id="mclose">닫기</button>
+<button id="mconfirm"></button>
+</div>
+</div>
 </div>
 
 <!-- 근태 모달 -->
 <div class="mbg" id="ambg">
-  <div class="modal">
-    <h3 id="amtitle"></h3>
-    <div class="my-ev-list" id="myEvList"></div>
-    <p style="margin-bottom:8px;font-weight:600;color:#334155">근태 추가</p>
-    <div class="type-grid" id="typeGrid"></div>
-    <div class="mbtns">
-      <button class="bcl" id="amclose">닫기</button>
-      <button class="bbk" id="amadd">추가</button>
-    </div>
-  </div>
+<div class="modal">
+<h3 id="amtitle"></h3>
+<div class="my-ev-list" id="myEvList"></div>
+<p style="margin-bottom:8px;font-weight:600;color:#334155">근태 추가</p>
+<input id="amname" type="text" maxlength="20" placeholder="이름 입력"
+style="width:100%;padding:11px 13px;font-size:14px;border:1.5px solid #E2E8F0;border-radius:8px;outline:none;margin-bottom:10px;font-family:inherit"/>
+<div class="type-grid" id="typeGrid"></div>
+<div class="mbtns">
+<button class="bcl" id="amclose">닫기</button>
+<button class="bbk" id="amadd">추가</button>
+</div>
+</div>
 </div>
 
 <div id="toast"></div>
-<div id="credit">by kenkim · v2.0</div>
+<div id="credit">by kenkim · v2.2</div>
 
 <script>
 var DB_URL = "https://dsat-meeting-room-default-rtdb.asia-southeast1.firebasedatabase.app";
 var API_KEY = "AIzaSyA19p683iO6_oSsvU30oqVIfDUlv871B8w";
+var PASSWORD = "1959";
 
 var ROOMS = [
-  {id:"3", name:"회의실 3", color:"#2563EB", light:"#DBEAFE", pmOnly:true},
-  {id:"4", name:"회의실 4", color:"#059669", light:"#D1FAE5", pmOnly:false}
+{id:"3", name:"회의실 3", color:"#2563EB", light:"#DBEAFE", pmOnly:true},
+{id:"4", name:"회의실 4", color:"#059669", light:"#D1FAE5", pmOnly:false}
 ];
 var SLOTS = [];
 (function(){
-  for (var h = 8; h <= 17; h++) { SLOTS.push(h*60); SLOTS.push(h*60+30); }
+for (var h = 8; h <= 17; h++) { SLOTS.push(h*60); SLOTS.push(h*60+30); }
 })();
 
 var ATT_TYPES = [
-  {id:"annual", name:"연차", color:"#2563EB"},
-  {id:"edu", name:"교육", color:"#059669"},
-  {id:"health", name:"건강검진", color:"#D97706"},
-  {id:"family", name:"패밀리데이", color:"#7C3AED"}
+{id:"annual", name:"연차", color:"#2563EB"},
+{id:"edu", name:"교육", color:"#059669"},
+{id:"health", name:"건강검진", color:"#D97706"},
+{id:"family", name:"패밀리데이", color:"#7C3AED"}
 ];
 
 var userName = "";
@@ -225,401 +227,421 @@ var curTab = "room";
 function pad(n) { return String(n).padStart(2,"0"); }
 
 function getToday() {
-  var d = new Date();
-  return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+var d = new Date();
+return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
 }
 
 function getDates() {
-  var arr = [];
-  var t = new Date();
-  for (var i = 0; i < 60; i++) {
-    var d = new Date(t);
-    d.setDate(t.getDate() + i);
-    arr.push(d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()));
-  }
-  return arr;
+var arr = [];
+var t = new Date();
+var added = 0;
+var i = 0;
+while (added < 40) {
+var d = new Date(t);
+d.setDate(t.getDate() + i);
+i++;
+var wd = d.getDay();
+if (wd === 0 || wd === 6) continue; // 일/토 제외
+arr.push(d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()));
+added++;
+}
+return arr;
 }
 
 function dateLabel(s) {
-  var p = s.split("-");
-  var d = new Date(+p[0], +p[1]-1, +p[2]);
-  var days = ["일","월","화","수","목","금","토"];
-  return (+p[1])+"/"+( +p[2])+" ("+days[d.getDay()]+")"+(s===getToday()?" 오늘":"");
+var p = s.split("-");
+var d = new Date(+p[0], +p[1]-1, +p[2]);
+var days = ["일","월","화","수","목","금","토"];
+return (+p[1])+"/"+( +p[2])+" ("+days[d.getDay()]+")"+(s===getToday()?" 오늘":"");
 }
 
 function fmtH(mins) { return pad(Math.floor(mins/60))+":"+pad(mins%60); }
 
 var toastTimer;
 function showToast(msg, type) {
-  var el = document.getElementById("toast");
-  el.textContent = msg;
-  el.style.background = (type==="error") ? "#DC2626" : (type==="info") ? "#475569" : "#059669";
-  el.style.display = "block";
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(function(){ el.style.display="none"; }, 3000);
+var el = document.getElementById("toast");
+el.textContent = msg;
+el.style.background = (type==="error") ? "#DC2626" : (type==="info") ? "#475569" : "#059669";
+el.style.display = "block";
+clearTimeout(toastTimer);
+toastTimer = setTimeout(function(){ el.style.display="none"; }, 3000);
 }
 
 function setStatus(ok) {
-  var el = document.getElementById("sbadge");
-  el.textContent = ok ? "🟢 연결됨" : "🔴 연결 끊김";
-  el.className = "badge " + (ok ? "ok" : "err");
+var el = document.getElementById("sbadge");
+el.textContent = ok ? "🟢 연결됨" : "🔴 연결 끊김";
+el.className = "badge " + (ok ? "ok" : "err");
 }
 
 /* ===== Firebase 통신 (회의실) ===== */
 function fetchBookings(date, cb) {
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", DB_URL+"/bookings/"+date+".json?key="+API_KEY, true);
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      try { cb(null, JSON.parse(xhr.responseText) || {}); }
-      catch(e) { cb(e, {}); }
-    } else { cb(new Error("HTTP "+xhr.status), {}); }
-  };
-  xhr.onerror = function() { cb(new Error("Network error"), {}); };
-  xhr.send();
+var xhr = new XMLHttpRequest();
+xhr.open("GET", DB_URL+"/bookings/"+date+".json?key="+API_KEY, true);
+xhr.onload = function() {
+if (xhr.status === 200) {
+try { cb(null, JSON.parse(xhr.responseText) || {}); }
+catch(e) { cb(e, {}); }
+} else { cb(new Error("HTTP "+xhr.status), {}); }
+};
+xhr.onerror = function() { cb(new Error("Network error"), {}); };
+xhr.send();
 }
 
 function setSlot(date, key, value, cb) {
-  var xhr = new XMLHttpRequest();
-  var url = DB_URL+"/bookings/"+date+"/"+key+".json?key="+API_KEY;
-  if (value === null) { xhr.open("DELETE", url, true); }
-  else { xhr.open("PUT", url, true); xhr.setRequestHeader("Content-Type","application/json"); }
-  xhr.onload = function() { cb((xhr.status===200||xhr.status===204) ? null : new Error("HTTP "+xhr.status)); };
-  xhr.onerror = function() { cb(new Error("Network error")); };
-  xhr.send(value===null ? null : JSON.stringify(value));
+var xhr = new XMLHttpRequest();
+var url = DB_URL+"/bookings/"+date+"/"+key+".json?key="+API_KEY;
+if (value === null) { xhr.open("DELETE", url, true); }
+else { xhr.open("PUT", url, true); xhr.setRequestHeader("Content-Type","application/json"); }
+xhr.onload = function() { cb((xhr.status===200||xhr.status===204) ? null : new Error("HTTP "+xhr.status)); };
+xhr.onerror = function() { cb(new Error("Network error")); };
+xhr.send(value===null ? null : JSON.stringify(value));
 }
 
 /* ===== Firebase 통신 (근태) ===== */
 function fetchAtt(ym, cb) {
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", DB_URL+"/attendance/"+ym+".json?key="+API_KEY, true);
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      try { cb(null, JSON.parse(xhr.responseText) || {}); }
-      catch(e) { cb(e, {}); }
-    } else { cb(new Error("HTTP "+xhr.status), {}); }
-  };
-  xhr.onerror = function() { cb(new Error("Network error"), {}); };
-  xhr.send();
+var xhr = new XMLHttpRequest();
+xhr.open("GET", DB_URL+"/attendance/"+ym+".json?key="+API_KEY, true);
+xhr.onload = function() {
+if (xhr.status === 200) {
+try { cb(null, JSON.parse(xhr.responseText) || {}); }
+catch(e) { cb(e, {}); }
+} else { cb(new Error("HTTP "+xhr.status), {}); }
+};
+xhr.onerror = function() { cb(new Error("Network error"), {}); };
+xhr.send();
 }
 
 function pushAtt(ym, record, cb) {
-  var xhr = new XMLHttpRequest();
-  xhr.open("POST", DB_URL+"/attendance/"+ym+".json?key="+API_KEY, true);
-  xhr.setRequestHeader("Content-Type","application/json");
-  xhr.onload = function() { cb((xhr.status===200) ? null : new Error("HTTP "+xhr.status)); };
-  xhr.onerror = function() { cb(new Error("Network error")); };
-  xhr.send(JSON.stringify(record));
+var xhr = new XMLHttpRequest();
+xhr.open("POST", DB_URL+"/attendance/"+ym+".json?key="+API_KEY, true);
+xhr.setRequestHeader("Content-Type","application/json");
+xhr.onload = function() { cb((xhr.status===200) ? null : new Error("HTTP "+xhr.status)); };
+xhr.onerror = function() { cb(new Error("Network error")); };
+xhr.send(JSON.stringify(record));
 }
 
 function delAtt(ym, id, cb) {
-  var xhr = new XMLHttpRequest();
-  xhr.open("DELETE", DB_URL+"/attendance/"+ym+"/"+id+".json?key="+API_KEY, true);
-  xhr.onload = function() { cb((xhr.status===200||xhr.status===204) ? null : new Error("HTTP "+xhr.status)); };
-  xhr.onerror = function() { cb(new Error("Network error")); };
-  xhr.send();
+var xhr = new XMLHttpRequest();
+xhr.open("DELETE", DB_URL+"/attendance/"+ym+"/"+id+".json?key="+API_KEY, true);
+xhr.onload = function() { cb((xhr.status===200||xhr.status===204) ? null : new Error("HTTP "+xhr.status)); };
+xhr.onerror = function() { cb(new Error("Network error")); };
+xhr.send();
 }
 
 /* ===== 폴링 ===== */
 function startPoll() {
-  stopPoll();
-  loadAll();
-  pollTimer = setInterval(loadAll, 5000);
+stopPoll();
+loadAll();
+pollTimer = setInterval(loadAll, 5000);
 }
 function stopPoll() { clearInterval(pollTimer); }
 
 function loadAll() {
-  if (curTab === "room") { loadRoom(); }
-  else { loadAtt(); }
+if (curTab === "room") { loadRoom(); }
+else { loadAtt(); }
 }
 
 function loadRoom() {
-  fetchBookings(selDate, function(err, data) {
-    if (err) { setStatus(false); return; }
-    bookings = data;
-    setStatus(true);
-    document.getElementById("spinner").style.display = "none";
-    renderRooms();
-  });
+fetchBookings(selDate, function(err, data) {
+if (err) { setStatus(false); return; }
+bookings = data;
+setStatus(true);
+document.getElementById("spinner").style.display = "none";
+renderRooms();
+});
 }
 
 function loadAtt() {
-  var ym = calYear+"-"+pad(calMonth+1);
-  fetchAtt(ym, function(err, data) {
-    if (err) { setStatus(false); return; }
-    attData = data;
-    setStatus(true);
-    renderCalendar();
-  });
+var ym = calYear+"-"+pad(calMonth+1);
+fetchAtt(ym, function(err, data) {
+if (err) { setStatus(false); return; }
+attData = data;
+setStatus(true);
+renderCalendar();
+});
 }
 
 /* ===== 로그인 ===== */
 function login() {
-  var v = document.getElementById("ni").value.trim();
-  if (!v) { alert("이름을 입력해주세요."); return; }
-  userName = v;
-  selDate = getToday();
-  var now = new Date();
-  calYear = now.getFullYear();
-  calMonth = now.getMonth();
-  document.getElementById("login-screen").style.display = "none";
-  document.getElementById("app-screen").style.display = "block";
-  document.getElementById("hname").textContent = userName;
-  document.getElementById("avc").textContent = userName[0];
-  buildTabs();
-  buildAttLegend();
-  startPoll();
+var v = document.getElementById("ni").value.trim();
+if (v !== PASSWORD) { alert("비밀번호가 올바르지 않습니다."); return; }
+selDate = getToday();
+var now = new Date();
+calYear = now.getFullYear();
+calMonth = now.getMonth();
+document.getElementById("login-screen").style.display = "none";
+document.getElementById("app-screen").style.display = "block";
+buildTabs();
+buildAttLegend();
+startPoll();
 }
 
 document.getElementById("lb").onclick = login;
 document.getElementById("ni").onkeydown = function(e) { if (e.key === "Enter") login(); };
 
 document.getElementById("logoutBtn").onclick = function() {
-  stopPoll();
-  userName = "";
-  document.getElementById("app-screen").style.display = "none";
-  document.getElementById("login-screen").style.display = "flex";
-  document.getElementById("ni").value = "";
+stopPoll();
+document.getElementById("app-screen").style.display = "none";
+document.getElementById("login-screen").style.display = "flex";
+document.getElementById("ni").value = "";
 };
 
 /* ===== 탭 전환 ===== */
 function switchTab(tab) {
-  curTab = tab;
-  document.getElementById("tab-room").className = "tab" + (tab==="room"?" active":"");
-  document.getElementById("tab-att").className = "tab" + (tab==="att"?" active":"");
-  document.getElementById("page-room").className = "page" + (tab==="room"?" active":"");
-  document.getElementById("page-att").className = "page" + (tab==="att"?" active":"");
-  loadAll();
+curTab = tab;
+document.getElementById("tab-room").className = "tab" + (tab==="room"?" active":"");
+document.getElementById("tab-att").className = "tab" + (tab==="att"?" active":"");
+document.getElementById("page-room").className = "page" + (tab==="room"?" active":"");
+document.getElementById("page-att").className = "page" + (tab==="att"?" active":"");
+loadAll();
 }
 
 /* ===== 회의실 ===== */
 function buildTabs() {
-  var wrap = document.getElementById("dtabs");
-  wrap.innerHTML = "";
-  var dates = getDates();
-  for (var i = 0; i < dates.length; i++) {
-    (function(d) {
-      var b = document.createElement("button");
-      b.className = "dtab" + (d===selDate ? " active" : "");
-      b.textContent = dateLabel(d);
-      b.onclick = function() { selDate = d; buildTabs(); loadRoom(); };
-      wrap.appendChild(b);
-    })(dates[i]);
-  }
+var wrap = document.getElementById("dtabs");
+wrap.innerHTML = "";
+var dates = getDates();
+for (var i = 0; i < dates.length; i++) {
+(function(d) {
+var b = document.createElement("button");
+b.className = "dtab" + (d===selDate ? " active" : "");
+b.textContent = dateLabel(d);
+b.onclick = function() { selDate = d; buildTabs(); loadRoom(); };
+wrap.appendChild(b);
+})(dates[i]);
+}
 }
 
 function renderRooms() {
-  var wrap = document.getElementById("rooms");
-  wrap.innerHTML = "";
-  for (var ri = 0; ri < ROOMS.length; ri++) {
-    var room = ROOMS[ri];
-    var card = document.createElement("div");
-    card.className = "rcard";
-    var hdr = document.createElement("div");
-    hdr.className = "rhdr";
-    hdr.style.background = room.light;
-    hdr.innerHTML = '<div class="rdot" style="background:'+room.color+'"></div>'
-      + '<span class="rname">'+room.name+'</span>'
-      + (room.pmOnly ? '<span style="font-size:11px;color:#64748B;margin-left:4px">오후만 예약가능</span>' : '');
-    card.appendChild(hdr);
-    var sw = document.createElement("div");
-    sw.className = "slots";
-    for (var hi = 0; hi < SLOTS.length; hi++) {
-      (function(mins, rm) {
-        var blocked = rm.pmOnly && mins < 13*60;
-        var key = rm.id+"_"+mins;
-        var bk = bookings[key] || null;
-        var mine = bk && (bk.user === userName);
-        var other = bk && !mine;
-        var bg = blocked ? "#F1F5F9" : (mine ? rm.light : (other ? "#FEF2F2" : "#F8FAFC"));
-        var bc = blocked ? "#CBD5E1" : (mine ? rm.color : (other ? "#FECACA" : "#E2E8F0"));
-        var fc = blocked ? "#CBD5E1" : (mine ? rm.color : (other ? "#DC2626" : "#475569"));
-        var s = document.createElement("div");
-        s.className = "slot";
-        s.style.background = bg;
-        s.style.borderColor = bc;
-        s.style.cursor = (blocked || other) ? "default" : "pointer";
-        s.innerHTML = '<div class="slot-h" style="color:'+fc+'">'+fmtH(mins)+'</div>'
-          + (blocked ? '<div class="slot-u" style="color:'+fc+'">불가</div>'
-            : bk ? '<div class="slot-u" style="color:'+fc+'">'+(mine?"내 예약":bk.user)+'</div>' : "");
-        if (!blocked && !other) {
-          s.onmouseover = function() { if (!bk) s.style.background="#EFF6FF"; };
-          s.onmouseout = function() { if (!bk) s.style.background="#F8FAFC"; };
-          s.onclick = function() { openModal(rm, mins, bk, mine); };
-        }
-        sw.appendChild(s);
-      })(SLOTS[hi], room);
-    }
-    card.appendChild(sw);
-    wrap.appendChild(card);
-  }
+var wrap = document.getElementById("rooms");
+wrap.innerHTML = "";
+for (var ri = 0; ri < ROOMS.length; ri++) {
+var room = ROOMS[ri];
+var card = document.createElement("div");
+card.className = "rcard";
+var hdr = document.createElement("div");
+hdr.className = "rhdr";
+hdr.style.background = room.light;
+hdr.innerHTML = '<div class="rdot" style="background:'+room.color+'"></div>'
++ '<span class="rname">'+room.name+'</span>'
++ (room.pmOnly ? '<span style="font-size:11px;color:#64748B;margin-left:4px">오후만 예약가능</span>' : '');
+card.appendChild(hdr);
+var sw = document.createElement("div");
+sw.className = "slots";
+for (var hi = 0; hi < SLOTS.length; hi++) {
+(function(mins, rm) {
+var blocked = rm.pmOnly && mins < 13*60;
+var key = rm.id+"_"+mins;
+var bk = bookings[key] || null;
+var bg = blocked ? "#F1F5F9" : (bk ? rm.light : "#F8FAFC");
+var bc = blocked ? "#CBD5E1" : (bk ? rm.color : "#E2E8F0");
+var fc = blocked ? "#CBD5E1" : (bk ? rm.color : "#475569");
+var s = document.createElement("div");
+s.className = "slot";
+s.style.background = bg;
+s.style.borderColor = bc;
+s.style.cursor = blocked ? "default" : "pointer";
+s.innerHTML = '<div class="slot-h" style="color:'+fc+'">'+fmtH(mins)+'</div>'
++ (blocked ? '<div class="slot-u" style="color:'+fc+'">불가</div>'
+: bk ? '<div class="slot-u" style="color:'+fc+'">'+bk.user+'</div>' : "");
+if (!blocked) {
+s.onmouseover = function() { if (!bk) s.style.background="#EFF6FF"; };
+s.onmouseout = function() { if (!bk) s.style.background="#F8FAFC"; };
+s.onclick = function() { openModal(rm, mins, bk); };
+}
+sw.appendChild(s);
+})(SLOTS[hi], room);
+}
+card.appendChild(sw);
+wrap.appendChild(card);
+}
 }
 
-function openModal(room, hour, booking, isMine) {
-  var type = booking ? "cancel" : "book";
-  pending = {type:type, room:room, hour:hour};
-  document.getElementById("mico").textContent = type==="book" ? "📅" : "🗑️";
-  document.getElementById("mtitle").textContent = type==="book" ? "예약하시겠습니까?" : "예약을 취소하시겠습니까?";
-  document.getElementById("mbody").innerHTML = "<strong>"+room.name+"</strong><br/>"+selDate+" "+fmtH(hour)+"<br/>"
-    +(type==="book" ? "예약자: <strong>"+userName+"</strong>" : "");
-  var btn = document.getElementById("mconfirm");
-  btn.textContent = type==="book" ? "예약 확정" : "취소 확인";
-  btn.className = type==="book" ? "bbk" : "bcc";
-  document.getElementById("mbg").classList.add("show");
+function openModal(room, hour, booking) {
+var type = booking ? "cancel" : "book";
+pending = {type:type, room:room, hour:hour};
+var nameInput = document.getElementById("mname");
+document.getElementById("mico").textContent = type==="book" ? "📅" : "🗑️";
+document.getElementById("mtitle").textContent = type==="book" ? "회의실 예약" : "예약을 취소하시겠습니까?";
+document.getElementById("mbody").innerHTML = "<strong>"+room.name+"</strong><br/>"+selDate+" "+fmtH(hour)+"<br/>"
++(type==="cancel" ? "예약자: <strong>"+booking.user+"</strong>" : "");
+if (type==="book") {
+nameInput.style.display = "block";
+nameInput.value = "";
+} else {
+nameInput.style.display = "none";
+}
+var btn = document.getElementById("mconfirm");
+btn.textContent = type==="book" ? "예약 확정" : "취소 확인";
+btn.className = type==="book" ? "bbk" : "bcc";
+document.getElementById("mbg").classList.add("show");
+if (type==="book") { setTimeout(function(){ nameInput.focus(); }, 100); }
 }
 
 function closeModal() { document.getElementById("mbg").classList.remove("show"); pending = null; }
 document.getElementById("mclose").onclick = closeModal;
 document.getElementById("mbg").onclick = function(e) { if(e.target===this) closeModal(); };
 document.getElementById("mconfirm").onclick = function() {
-  if (!pending) return;
-  var type = pending.type, room = pending.room, hour = pending.hour;
-  closeModal();
-  var key = room.id+"_"+hour;
-  var val = (type==="book") ? {user:userName, bookedAt:new Date().toISOString()} : null;
-  setSlot(selDate, key, val, function(err) {
-    if (err) { showToast("오류: "+err.message, "error"); return; }
-    showToast(type==="book" ? room.name+" "+fmtH(hour)+" 예약 완료!" : "예약이 취소되었습니다.", type==="cancel"?"info":"success");
-    loadRoom();
-  });
+if (!pending) return;
+var type = pending.type, room = pending.room, hour = pending.hour;
+var key = room.id+"_"+hour;
+if (type==="book") {
+var nm = document.getElementById("mname").value.trim();
+if (!nm) { alert("회의명 또는 예약자를 입력해주세요."); return; }
+var val = {user:nm, bookedAt:new Date().toISOString()};
+closeModal();
+setSlot(selDate, key, val, function(err) {
+if (err) { showToast("오류: "+err.message, "error"); return; }
+showToast(room.name+" "+fmtH(hour)+" 예약 완료!", "success");
+loadRoom();
+});
+} else {
+closeModal();
+setSlot(selDate, key, null, function(err) {
+if (err) { showToast("오류: "+err.message, "error"); return; }
+showToast("예약이 취소되었습니다.", "info");
+loadRoom();
+});
+}
 };
 
 /* ===== 근태 캘린더 ===== */
 function typeById(id) {
-  for (var i=0;i<ATT_TYPES.length;i++) { if (ATT_TYPES[i].id===id) return ATT_TYPES[i]; }
-  return {id:id, name:id, color:"#64748B"};
+for (var i=0;i<ATT_TYPES.length;i++) { if (ATT_TYPES[i].id===id) return ATT_TYPES[i]; }
+return {id:id, name:id, color:"#64748B"};
 }
 
 function buildAttLegend() {
-  var wrap = document.getElementById("attLegend");
-  wrap.innerHTML = "";
-  for (var i=0;i<ATT_TYPES.length;i++) {
-    var t = ATT_TYPES[i];
-    var c = document.createElement("span");
-    c.className = "att-chip";
-    c.innerHTML = '<span class="att-cdot" style="background:'+t.color+'"></span>'+t.name;
-    wrap.appendChild(c);
-  }
+var wrap = document.getElementById("attLegend");
+wrap.innerHTML = "";
+for (var i=0;i<ATT_TYPES.length;i++) {
+var t = ATT_TYPES[i];
+var c = document.createElement("span");
+c.className = "att-chip";
+c.innerHTML = '<span class="att-cdot" style="background:'+t.color+'"></span>'+t.name;
+wrap.appendChild(c);
+}
 }
 
 document.getElementById("prevM").onclick = function() {
-  calMonth--; if (calMonth<0) { calMonth=11; calYear--; }
-  loadAtt();
+calMonth--; if (calMonth<0) { calMonth=11; calYear--; }
+loadAtt();
 };
 document.getElementById("nextM").onclick = function() {
-  calMonth++; if (calMonth>11) { calMonth=0; calYear++; }
-  loadAtt();
+calMonth++; if (calMonth>11) { calMonth=0; calYear++; }
+loadAtt();
 };
 
 function renderCalendar() {
-  document.getElementById("calTitle").textContent = calYear+"년 "+(calMonth+1)+"월";
-  var grid = document.getElementById("calGrid");
-  grid.innerHTML = "";
+document.getElementById("calTitle").textContent = calYear+"년 "+(calMonth+1)+"월";
+var grid = document.getElementById("calGrid");
+grid.innerHTML = "";
 
-  var first = new Date(calYear, calMonth, 1);
-  var startWd = first.getDay();
-  var daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
-  var todayStr = getToday();
+var first = new Date(calYear, calMonth, 1);
+var startWd = first.getDay();
+var daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+var todayStr = getToday();
 
-  // 날짜별 이벤트 모으기
-  var byDate = {};
-  for (var k in attData) {
-    if (!attData.hasOwnProperty(k)) continue;
-    var rec = attData[k];
-    rec._id = k;
-    if (!byDate[rec.date]) byDate[rec.date] = [];
-    byDate[rec.date].push(rec);
-  }
+// 날짜별 이벤트 모으기
+var byDate = {};
+for (var k in attData) {
+if (!attData.hasOwnProperty(k)) continue;
+var rec = attData[k];
+rec._id = k;
+if (!byDate[rec.date]) byDate[rec.date] = [];
+byDate[rec.date].push(rec);
+}
 
-  // 앞 빈칸
-  for (var e=0;e<startWd;e++) {
-    var emp = document.createElement("div");
-    emp.className = "cal-cell empty";
-    grid.appendChild(emp);
-  }
+// 앞 빈칸
+for (var e=0;e<startWd;e++) {
+var emp = document.createElement("div");
+emp.className = "cal-cell empty";
+grid.appendChild(emp);
+}
 
-  for (var d=1; d<=daysInMonth; d++) {
-    (function(day){
-      var dateStr = calYear+"-"+pad(calMonth+1)+"-"+pad(day);
-      var wd = new Date(calYear, calMonth, day).getDay();
-      var cell = document.createElement("div");
-      cell.className = "cal-cell" + (dateStr===todayStr ? " today" : "");
+for (var d=1; d<=daysInMonth; d++) {
+(function(day){
+var dateStr = calYear+"-"+pad(calMonth+1)+"-"+pad(day);
+var wd = new Date(calYear, calMonth, day).getDay();
+var cell = document.createElement("div");
+cell.className = "cal-cell" + (dateStr===todayStr ? " today" : "");
 
-      var dlabel = document.createElement("div");
-      dlabel.className = "cal-date" + (wd===0?" sun":wd===6?" sat":"");
-      dlabel.textContent = day;
-      cell.appendChild(dlabel);
+var dlabel = document.createElement("div");
+dlabel.className = "cal-date" + (wd===0?" sun":wd===6?" sat":"");
+dlabel.textContent = day;
+cell.appendChild(dlabel);
 
-      var evs = byDate[dateStr] || [];
-      for (var i=0;i<evs.length;i++) {
-        var t = typeById(evs[i].type);
-        var ev = document.createElement("div");
-        ev.className = "cal-ev";
-        ev.style.background = t.color;
-        ev.textContent = evs[i].user+" "+t.name;
-        cell.appendChild(ev);
-      }
+var evs = byDate[dateStr] || [];
+for (var i=0;i<evs.length;i++) {
+var t = typeById(evs[i].type);
+var ev = document.createElement("div");
+ev.className = "cal-ev";
+ev.style.background = t.color;
+ev.textContent = evs[i].user+" "+t.name;
+cell.appendChild(ev);
+}
 
-      cell.onclick = function() { openAttModal(dateStr); };
-      grid.appendChild(cell);
-    })(d);
-  }
+cell.onclick = function() { openAttModal(dateStr); };
+grid.appendChild(cell);
+})(d);
+}
 }
 
 function openAttModal(dateStr) {
-  attSelDate = dateStr;
-  attSelType = null;
-  var p = dateStr.split("-");
-  document.getElementById("amtitle").textContent = (+p[1])+"월 "+(+p[2])+"일 근태";
+attSelDate = dateStr;
+attSelType = null;
+var p = dateStr.split("-");
+document.getElementById("amtitle").textContent = (+p[1])+"월 "+(+p[2])+"일 근태";
+document.getElementById("amname").value = "";
 
-  // 내 근태 목록
-  var listWrap = document.getElementById("myEvList");
-  listWrap.innerHTML = "";
-  var mine = [];
-  for (var k in attData) {
-    if (!attData.hasOwnProperty(k)) continue;
-    var rec = attData[k];
-    if (rec.date===dateStr && rec.user===userName) { rec._id=k; mine.push(rec); }
-  }
-  if (mine.length===0) {
-    listWrap.innerHTML = '<p style="font-size:12px;color:#94A3B8;margin-bottom:4px">등록한 근태가 없습니다</p>';
-  } else {
-    for (var i=0;i<mine.length;i++) {
-      (function(rec){
-        var t = typeById(rec.type);
-        var row = document.createElement("div");
-        row.className = "my-ev";
-        row.style.background = t.color+"22";
-        row.innerHTML = '<span style="color:'+t.color+';font-weight:700">'+t.name+'</span>';
-        var x = document.createElement("button");
-        x.className = "del-x";
-        x.textContent = "삭제";
-        x.onclick = function() { removeAtt(rec._id); };
-        row.appendChild(x);
-        listWrap.appendChild(row);
-      })(mine[i]);
-    }
-  }
+// 그 날 등록된 전체 근태 목록
+var listWrap = document.getElementById("myEvList");
+listWrap.innerHTML = "";
+var list = [];
+for (var k in attData) {
+if (!attData.hasOwnProperty(k)) continue;
+var rec = attData[k];
+if (rec.date===dateStr) { rec._id=k; list.push(rec); }
+}
+if (list.length===0) {
+listWrap.innerHTML = '<p style="font-size:12px;color:#94A3B8;margin-bottom:4px">등록된 근태가 없습니다</p>';
+} else {
+for (var i=0;i<list.length;i++) {
+(function(rec){
+var t = typeById(rec.type);
+var row = document.createElement("div");
+row.className = "my-ev";
+row.style.background = t.color+"22";
+row.innerHTML = '<span style="color:'+t.color+';font-weight:700">'+rec.user+' · '+t.name+'</span>';
+var x = document.createElement("button");
+x.className = "del-x";
+x.textContent = "삭제";
+x.onclick = function() { removeAtt(rec._id); };
+row.appendChild(x);
+listWrap.appendChild(row);
+})(list[i]);
+}
+}
 
-  // 유형 버튼
-  var tg = document.getElementById("typeGrid");
-  tg.innerHTML = "";
-  for (var j=0;j<ATT_TYPES.length;j++) {
-    (function(t){
-      var b = document.createElement("button");
-      b.className = "type-btn";
-      b.textContent = t.name;
-      b.onclick = function() {
-        attSelType = t.id;
-        var all = tg.getElementsByClassName("type-btn");
-        for (var m=0;m<all.length;m++) all[m].className="type-btn";
-        b.className = "type-btn sel";
-      };
-      tg.appendChild(b);
-    })(ATT_TYPES[j]);
-  }
+// 유형 버튼
+var tg = document.getElementById("typeGrid");
+tg.innerHTML = "";
+for (var j=0;j<ATT_TYPES.length;j++) {
+(function(t){
+var b = document.createElement("button");
+b.className = "type-btn";
+b.textContent = t.name;
+b.onclick = function() {
+attSelType = t.id;
+var all = tg.getElementsByClassName("type-btn");
+for (var m=0;m<all.length;m++) all[m].className="type-btn";
+b.className = "type-btn sel";
+};
+tg.appendChild(b);
+})(ATT_TYPES[j]);
+}
 
-  document.getElementById("ambg").classList.add("show");
+document.getElementById("ambg").classList.add("show");
 }
 
 function closeAttModal() { document.getElementById("ambg").classList.remove("show"); }
@@ -627,25 +649,27 @@ document.getElementById("amclose").onclick = closeAttModal;
 document.getElementById("ambg").onclick = function(e) { if(e.target===this) closeAttModal(); };
 
 document.getElementById("amadd").onclick = function() {
-  if (!attSelType) { alert("근태 유형을 선택해주세요."); return; }
-  var ym = attSelDate.substring(0,7);
-  var rec = { user:userName, date:attSelDate, type:attSelType, createdAt:new Date().toISOString() };
-  closeAttModal();
-  pushAtt(ym, rec, function(err) {
-    if (err) { showToast("오류: "+err.message, "error"); return; }
-    showToast("근태가 등록되었습니다.", "success");
-    loadAtt();
-  });
+var nm = document.getElementById("amname").value.trim();
+if (!nm) { alert("이름을 입력해주세요."); return; }
+if (!attSelType) { alert("근태 유형을 선택해주세요."); return; }
+var ym = attSelDate.substring(0,7);
+var rec = { user:nm, date:attSelDate, type:attSelType, createdAt:new Date().toISOString() };
+closeAttModal();
+pushAtt(ym, rec, function(err) {
+if (err) { showToast("오류: "+err.message, "error"); return; }
+showToast("근태가 등록되었습니다.", "success");
+loadAtt();
+});
 };
 
 function removeAtt(id) {
-  var ym = attSelDate.substring(0,7);
-  delAtt(ym, id, function(err) {
-    if (err) { showToast("오류: "+err.message, "error"); return; }
-    showToast("삭제되었습니다.", "info");
-    closeAttModal();
-    loadAtt();
-  });
+var ym = attSelDate.substring(0,7);
+delAtt(ym, id, function(err) {
+if (err) { showToast("오류: "+err.message, "error"); return; }
+showToast("삭제되었습니다.", "info");
+closeAttModal();
+loadAtt();
+});
 }
 </script>
 </body>
