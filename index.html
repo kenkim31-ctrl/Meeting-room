@@ -163,8 +163,18 @@ main { max-width:900px; margin:0 auto; padding:18px 12px; }
 <div class="mico" id="mico"></div>
 <h3 id="mtitle"></h3>
 <p id="mbody"></p>
+<div id="mbook-opts" style="display:none">
 <input id="mname" type="text" maxlength="30" placeholder="회의명 / 예약자 입력"
-style="width:100%;padding:11px 13px;font-size:14px;border:1.5px solid #E2E8F0;border-radius:8px;outline:none;margin-bottom:16px;font-family:inherit;display:none"/>
+style="width:100%;padding:11px 13px;font-size:14px;border:1.5px solid #E2E8F0;border-radius:8px;outline:none;margin-bottom:12px;font-family:inherit"/>
+<p style="font-size:12px;font-weight:600;color:#334155;margin-bottom:6px">반복</p>
+<div id="repGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:10px"></div>
+<div id="repCountWrap" style="display:none;align-items:center;gap:8px;margin-bottom:16px">
+<span style="font-size:13px;color:#475569">반복 횟수</span>
+<input id="repCount" type="number" min="2" max="30" value="4"
+style="width:64px;padding:7px 9px;font-size:13px;border:1.5px solid #E2E8F0;border-radius:7px;outline:none;font-family:inherit"/>
+<span style="font-size:13px;color:#475569">회 (이번 포함)</span>
+</div>
+</div>
 <div class="mbtns">
 <button class="bcl" id="mclose">닫기</button>
 <button id="mconfirm"></button>
@@ -189,7 +199,7 @@ style="width:100%;padding:11px 13px;font-size:14px;border:1.5px solid #E2E8F0;bo
 </div>
 
 <div id="toast"></div>
-<div id="credit">by kenkim · v2.2</div>
+<div id="credit">by kenkim · v2.3</div>
 
 <script>
 var DB_URL = "https://dsat-meeting-room-default-rtdb.asia-southeast1.firebasedatabase.app";
@@ -217,6 +227,7 @@ var selDate = "";
 var bookings = {};
 var pending = null;
 var pollTimer = null;
+var rangeStart = null; // 연속 예약 시작 슬롯(분)
 
 var attData = {};
 var calYear = 0, calMonth = 0;
@@ -347,7 +358,9 @@ if (err) { setStatus(false); return; }
 bookings = data;
 setStatus(true);
 document.getElementById("spinner").style.display = "none";
-renderRooms();
+// 범위 선택 중이거나 모달이 열려 있으면 다시 그리지 않음 (선택 유지)
+var modalOpen = document.getElementById("mbg").classList.contains("show");
+if (!rangeStart && !modalOpen) renderRooms();
 });
 }
 
@@ -406,7 +419,7 @@ for (var i = 0; i < dates.length; i++) {
 var b = document.createElement("button");
 b.className = "dtab" + (d===selDate ? " active" : "");
 b.textContent = dateLabel(d);
-b.onclick = function() { selDate = d; buildTabs(); loadRoom(); };
+b.onclick = function() { selDate = d; rangeStart = null; buildTabs(); loadRoom(); };
 wrap.appendChild(b);
 })(dates[i]);
 }
@@ -422,9 +435,11 @@ card.className = "rcard";
 var hdr = document.createElement("div");
 hdr.className = "rhdr";
 hdr.style.background = room.light;
+var hint = (rangeStart && rangeStart.room.id===room.id)
+? '<span style="font-size:11px;color:#2563EB;margin-left:4px;font-weight:700">시작: '+fmtH(rangeStart.mins)+' → 끝 슬롯을 선택하세요</span>'
+: (room.pmOnly ? '<span style="font-size:11px;color:#64748B;margin-left:4px">오후만 예약가능</span>' : '');
 hdr.innerHTML = '<div class="rdot" style="background:'+room.color+'"></div>'
-+ '<span class="rname">'+room.name+'</span>'
-+ (room.pmOnly ? '<span style="font-size:11px;color:#64748B;margin-left:4px">오후만 예약가능</span>' : '');
++ '<span class="rname">'+room.name+'</span>' + hint;
 card.appendChild(hdr);
 var sw = document.createElement("div");
 sw.className = "slots";
@@ -433,9 +448,18 @@ for (var hi = 0; hi < SLOTS.length; hi++) {
 var blocked = rm.pmOnly && mins < 13*60;
 var key = rm.id+"_"+mins;
 var bk = bookings[key] || null;
+
+// 범위 선택 중 강조
+var inRange = false, isStart = false;
+if (rangeStart && rangeStart.room.id===rm.id) {
+if (mins===rangeStart.mins) isStart = true;
+}
+
 var bg = blocked ? "#F1F5F9" : (bk ? rm.light : "#F8FAFC");
 var bc = blocked ? "#CBD5E1" : (bk ? rm.color : "#E2E8F0");
 var fc = blocked ? "#CBD5E1" : (bk ? rm.color : "#475569");
+if (isStart) { bg = "#2563EB"; bc = "#2563EB"; fc = "#fff"; }
+
 var s = document.createElement("div");
 s.className = "slot";
 s.style.background = bg;
@@ -443,11 +467,10 @@ s.style.borderColor = bc;
 s.style.cursor = blocked ? "default" : "pointer";
 s.innerHTML = '<div class="slot-h" style="color:'+fc+'">'+fmtH(mins)+'</div>'
 + (blocked ? '<div class="slot-u" style="color:'+fc+'">불가</div>'
+: isStart ? '<div class="slot-u" style="color:#fff">시작</div>'
 : bk ? '<div class="slot-u" style="color:'+fc+'">'+bk.user+'</div>' : "");
 if (!blocked) {
-s.onmouseover = function() { if (!bk) s.style.background="#EFF6FF"; };
-s.onmouseout = function() { if (!bk) s.style.background="#F8FAFC"; };
-s.onclick = function() { openModal(rm, mins, bk); };
+s.onclick = function() { slotClick(rm, mins, bk); };
 }
 sw.appendChild(s);
 })(SLOTS[hi], room);
@@ -457,51 +480,188 @@ wrap.appendChild(card);
 }
 }
 
-function openModal(room, hour, booking) {
-var type = booking ? "cancel" : "book";
-pending = {type:type, room:room, hour:hour};
-var nameInput = document.getElementById("mname");
-document.getElementById("mico").textContent = type==="book" ? "📅" : "🗑️";
-document.getElementById("mtitle").textContent = type==="book" ? "회의실 예약" : "예약을 취소하시겠습니까?";
-document.getElementById("mbody").innerHTML = "<strong>"+room.name+"</strong><br/>"+selDate+" "+fmtH(hour)+"<br/>"
-+(type==="cancel" ? "예약자: <strong>"+booking.user+"</strong>" : "");
-if (type==="book") {
-nameInput.style.display = "block";
-nameInput.value = "";
-} else {
-nameInput.style.display = "none";
+// 슬롯 클릭: 예약된 칸이면 취소 모달, 빈 칸이면 범위 선택
+function slotClick(room, mins, booking) {
+if (booking) {
+// 예약된 슬롯 → 취소
+rangeStart = null;
+openCancelModal(room, mins, booking);
+return;
 }
+// 빈 슬롯
+if (!rangeStart) {
+// 첫 클릭 = 시작점 지정
+rangeStart = {room:room, mins:mins};
+renderRooms();
+showToast("시작 "+fmtH(mins)+" 선택됨. 끝 슬롯을 누르세요. (한 칸만 쓰려면 같은 칸 다시 클릭)", "info");
+return;
+}
+// 두 번째 클릭 = 끝점
+if (rangeStart.room.id !== room.id) {
+// 다른 방을 누르면 그 방의 새 시작점으로 변경
+rangeStart = {room:room, mins:mins};
+renderRooms();
+showToast("시작 "+fmtH(mins)+" 선택됨. 끝 슬롯을 누르세요.", "info");
+return;
+}
+var startMins = Math.min(rangeStart.mins, mins);
+var endMins = Math.max(rangeStart.mins, mins);
+// 범위 내 슬롯 목록 만들기 (30분 단위)
+var list = [];
+for (var i=0;i<SLOTS.length;i++) {
+if (SLOTS[i] >= startMins && SLOTS[i] <= endMins) {
+if (room.pmOnly && SLOTS[i] < 13*60) continue;
+list.push(SLOTS[i]);
+}
+}
+// 이미 예약된 슬롯이 끼어있는지 검사
+var conflict = false;
+for (var j=0;j<list.length;j++) {
+if (bookings[room.id+"_"+list[j]]) { conflict = true; break; }
+}
+rangeStart = null;
+if (conflict) {
+renderRooms();
+showToast("선택 범위에 이미 예약된 시간이 있습니다.", "error");
+return;
+}
+if (list.length===0) {
+renderRooms();
+showToast("예약 가능한 슬롯이 없습니다.", "error");
+return;
+}
+openBookModal(room, list);
+}
+
+var repMode = "none";
+function openBookModal(room, slotList) {
+pending = {type:"book", room:room, slots:slotList};
+repMode = "none";
+document.getElementById("mico").textContent = "📅";
+document.getElementById("mtitle").textContent = "회의실 예약";
+var startStr = fmtH(slotList[0]);
+var endStr = fmtH(slotList[slotList.length-1] + 30); // 마지막 슬롯 끝
+document.getElementById("mbody").innerHTML = "<strong>"+room.name+"</strong><br/>"+selDate+"<br/>"
++ "<strong>"+startStr+" ~ "+endStr+"</strong> ("+slotList.length+"개 슬롯)";
+document.getElementById("mbook-opts").style.display = "block";
+document.getElementById("mname").value = "";
+buildRepGrid();
+document.getElementById("repCountWrap").style.display = "none";
 var btn = document.getElementById("mconfirm");
-btn.textContent = type==="book" ? "예약 확정" : "취소 확인";
-btn.className = type==="book" ? "bbk" : "bcc";
+btn.textContent = "예약 확정";
+btn.className = "bbk";
 document.getElementById("mbg").classList.add("show");
-if (type==="book") { setTimeout(function(){ nameInput.focus(); }, 100); }
+setTimeout(function(){ document.getElementById("mname").focus(); }, 100);
+renderRooms();
+}
+
+function openCancelModal(room, mins, booking) {
+pending = {type:"cancel", room:room, slots:[mins]};
+document.getElementById("mico").textContent = "🗑️";
+document.getElementById("mtitle").textContent = "예약을 취소하시겠습니까?";
+document.getElementById("mbody").innerHTML = "<strong>"+room.name+"</strong><br/>"+selDate+" "+fmtH(mins)+"<br/>"
++ "예약자: <strong>"+booking.user+"</strong>";
+document.getElementById("mbook-opts").style.display = "none";
+var btn = document.getElementById("mconfirm");
+btn.textContent = "취소 확인";
+btn.className = "bcc";
+document.getElementById("mbg").classList.add("show");
+}
+
+var REP_OPTS = [
+{id:"none", name:"안함"},
+{id:"daily", name:"매일"},
+{id:"weekly", name:"매주"},
+{id:"monthly", name:"매월"}
+];
+function buildRepGrid() {
+var g = document.getElementById("repGrid");
+g.innerHTML = "";
+for (var i=0;i<REP_OPTS.length;i++) {
+(function(opt){
+var b = document.createElement("button");
+b.className = "type-btn" + (opt.id==="none"?" sel":"");
+b.style.padding = "9px";
+b.textContent = opt.name;
+b.onclick = function() {
+repMode = opt.id;
+var all = g.getElementsByClassName("type-btn");
+for (var m=0;m<all.length;m++) all[m].className="type-btn";
+b.className = "type-btn sel";
+document.getElementById("repCountWrap").style.display = (opt.id==="none") ? "none" : "flex";
+};
+g.appendChild(b);
+})(REP_OPTS[i]);
+}
 }
 
 function closeModal() { document.getElementById("mbg").classList.remove("show"); pending = null; }
 document.getElementById("mclose").onclick = closeModal;
 document.getElementById("mbg").onclick = function(e) { if(e.target===this) closeModal(); };
+
+// 반복 날짜 목록 생성
+function buildRepeatDates(baseDate, mode, count) {
+var dates = [baseDate];
+if (mode==="none") return dates;
+var p = baseDate.split("-");
+for (var i=1;i<count;i++) {
+var d = new Date(+p[0], +p[1]-1, +p[2]);
+if (mode==="daily") d.setDate(d.getDate()+i);
+if (mode==="weekly") d.setDate(d.getDate()+i*7);
+if (mode==="monthly") d.setMonth(d.getMonth()+i);
+dates.push(d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()));
+}
+return dates;
+}
+
 document.getElementById("mconfirm").onclick = function() {
 if (!pending) return;
-var type = pending.type, room = pending.room, hour = pending.hour;
-var key = room.id+"_"+hour;
-if (type==="book") {
-var nm = document.getElementById("mname").value.trim();
-if (!nm) { alert("회의명 또는 예약자를 입력해주세요."); return; }
-var val = {user:nm, bookedAt:new Date().toISOString()};
-closeModal();
-setSlot(selDate, key, val, function(err) {
-if (err) { showToast("오류: "+err.message, "error"); return; }
-showToast(room.name+" "+fmtH(hour)+" 예약 완료!", "success");
-loadRoom();
-});
-} else {
+var type = pending.type, room = pending.room, slots = pending.slots;
+
+if (type==="cancel") {
+var key = room.id+"_"+slots[0];
 closeModal();
 setSlot(selDate, key, null, function(err) {
 if (err) { showToast("오류: "+err.message, "error"); return; }
 showToast("예약이 취소되었습니다.", "info");
 loadRoom();
 });
+return;
+}
+
+// 예약
+var nm = document.getElementById("mname").value.trim();
+if (!nm) { alert("회의명 또는 예약자를 입력해주세요."); return; }
+var count = 1;
+if (repMode!=="none") {
+count = parseInt(document.getElementById("repCount").value, 10);
+if (!count || count < 2) count = 2;
+if (count > 30) count = 30;
+}
+var dateList = buildRepeatDates(selDate, repMode, count);
+closeModal();
+
+// 모든 (날짜 × 슬롯) 조합을 저장
+var tasks = [];
+for (var di=0; di<dateList.length; di++) {
+for (var si=0; si<slots.length; si++) {
+tasks.push({date:dateList[di], key:room.id+"_"+slots[si]});
+}
+}
+var done = 0, failed = 0;
+var val = {user:nm, bookedAt:new Date().toISOString()};
+for (var t=0;t<tasks.length;t++) {
+(function(task){
+setSlot(task.date, task.key, val, function(err){
+done++;
+if (err) failed++;
+if (done===tasks.length) {
+if (failed>0) showToast(failed+"건 실패, 나머지 예약 완료", "error");
+else showToast(room.name+" 예약 완료! ("+dateList.length+"일 × "+slots.length+"슬롯)", "success");
+loadRoom();
+}
+});
+})(tasks[t]);
 }
 };
 
