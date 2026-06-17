@@ -37,7 +37,7 @@ main { max-width:900px; margin:0 auto; padding:18px 12px; }
 .rdot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
 .rname { font-size:14px; font-weight:700; color:#0F172A; }
 .slots { padding:10px 12px; display:flex; gap:5px; flex-wrap:wrap; }
-.slot { min-width:64px; padding:7px 6px; border-radius:8px; border:1.5px solid #E2E8F0; background:#F8FAFC; text-align:center; cursor:pointer; user-select:none; transition:background .12s; }
+.slot { min-width:58px; padding:7px 5px; border-radius:8px; border:1.5px solid #E2E8F0; background:#F8FAFC; text-align:center; cursor:pointer; user-select:none; transition:background .12s; }
 .slot-h { font-size:11px; font-weight:600; }
 .slot-u { font-size:9px; margin-top:2px; opacity:.85; }
 .mbg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); align-items:center; justify-content:center; z-index:1000; }
@@ -118,7 +118,14 @@ var ROOMS = [
 {id:"3", name:"회의실 3", color:"#2563EB", light:"#DBEAFE", pmOnly:true},
 {id:"4", name:"회의실 4", color:"#059669", light:"#D1FAE5", pmOnly:false}
 ];
-var HOURS = [8,9,10,11,12,13,14,15,16,17];
+// 08:00 ~ 17:30, 30분 단위 (슬롯 시작 시각)
+var SLOTS = [];
+(function(){
+for (var h = 8; h <= 17; h++) {
+SLOTS.push(h*60); // 정시
+SLOTS.push(h*60+30); // 30분
+}
+})();
 
 var userName = "";
 var selDate = "";
@@ -151,7 +158,7 @@ var days = ["일","월","화","수","목","금","토"];
 return (+p[1])+"/"+( +p[2])+" ("+days[d.getDay()]+")"+(s===getToday()?" 오늘":"");
 }
 
-function fmtH(h) { return pad(h)+":00"; }
+function fmtH(mins) { return pad(Math.floor(mins/60))+":"+pad(mins%60); }
 
 var toastTimer;
 function showToast(msg, type) {
@@ -282,10 +289,10 @@ card.appendChild(hdr);
 var sw = document.createElement("div");
 sw.className = "slots";
 
-for (var hi = 0; hi < HOURS.length; hi++) {
-(function(h, rm) {
-var blocked = rm.pmOnly && h < 13;
-var key = rm.id+"_"+h;
+for (var hi = 0; hi < SLOTS.length; hi++) {
+(function(mins, rm) {
+var blocked = rm.pmOnly && mins < 13*60;
+var key = rm.id+"_"+mins;
 var bk = bookings[key] || null;
 var mine = bk && (bk.user === userName);
 var other = bk && !mine;
@@ -299,17 +306,17 @@ s.className = "slot";
 s.style.background = bg;
 s.style.borderColor = bc;
 s.style.cursor = (blocked || other) ? "default" : "pointer";
-s.innerHTML = '<div class="slot-h" style="color:'+fc+'">'+fmtH(h)+'</div>'
+s.innerHTML = '<div class="slot-h" style="color:'+fc+'">'+fmtH(mins)+'</div>'
 + (blocked ? '<div class="slot-u" style="color:'+fc+'">불가</div>'
 : bk ? '<div class="slot-u" style="color:'+fc+'">'+(mine?"내 예약":bk.user)+'</div>' : "");
 
 if (!blocked && !other) {
 s.ON-MOUSEOVER = function() { if (!bk) s.style.background="#EFF6FF"; };
 s.ON-MOUSEOUT = function() { if (!bk) s.style.background="#F8FAFC"; };
-s.ON-CLICK = function() { openModal(rm, h, bk, mine); };
+s.ON-CLICK = function() { openModal(rm, mins, bk, mine); };
 }
 sw.appendChild(s);
-})(HOURS[hi], room);
+})(SLOTS[hi], room);
 }
 
 card.appendChild(sw);
