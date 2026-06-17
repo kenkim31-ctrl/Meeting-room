@@ -11,7 +11,7 @@ body { font-family: 'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background
 #login-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; }
 .login-card { background:#fff; border-radius:16px; padding:48px 36px; box-shadow:0 4px 24px rgba(0,0,0,.1); width:320px; text-align:center; }
 .login-card h1 { font-size:21px; font-weight:700; color:#0F172A; margin:10px 0 6px; }
-.login-card p { font-size:13px; color:#64748B; margin-bottom:26px; }
+.login-card p  { font-size:13px; color:#64748B; margin-bottom:26px; }
 .login-card input { width:100%; padding:12px 14px; font-size:15px; border:1.5px solid #E2E8F0; border-radius:8px; outline:none; margin-bottom:12px; font-family:inherit; }
 .login-card input:focus { border-color:#2563EB; }
 .login-card button { width:100%; padding:12px; background:#2563EB; color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; }
@@ -22,7 +22,7 @@ header { background:#fff; border-bottom:1px solid #E2E8F0; padding:13px 16px; di
 .hl { display:flex; align-items:center; gap:8px; }
 .hl h2 { font-size:15px; font-weight:700; color:#0F172A; }
 .badge { font-size:11px; padding:2px 8px; border-radius:20px; border:1px solid; }
-.ok { background:#F0FDF4; color:#15803D; border-color:#BBF7D0; }
+.ok  { background:#F0FDF4; color:#15803D; border-color:#BBF7D0; }
 .err { background:#FEF2F2; color:#DC2626; border-color:#FECACA; }
 .hr { display:flex; align-items:center; gap:8px; }
 .avatar { width:27px; height:27px; border-radius:50%; background:#2563EB; color:#fff; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; }
@@ -51,7 +51,7 @@ main { max-width:900px; margin:0 auto; padding:18px 12px; }
 .modal { background:#fff; border-radius:14px; padding:28px 24px; width:290px; box-shadow:0 8px 40px rgba(0,0,0,.18); }
 .mico { font-size:24px; margin-bottom:8px; }
 .modal h3 { font-size:15px; font-weight:700; color:#0F172A; margin-bottom:7px; }
-.modal p { font-size:13px; color:#475569; line-height:1.7; margin-bottom:20px; }
+.modal p  { font-size:13px; color:#475569; line-height:1.7; margin-bottom:20px; }
 .mbtns { display:flex; gap:9px; }
 .mbtns button { flex:1; padding:10px; border:none; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; }
 .bcl { background:#F1F5F9; color:#475569; }
@@ -94,6 +94,7 @@ footer { text-align:center; font-size:11px; color:#CBD5E1; margin-top:18px; padd
       <div style="display:flex;align-items:center;gap:4px"><div class="ldot" style="background:#F8FAFC;border-color:#E2E8F0"></div>예약 가능</div>
       <div style="display:flex;align-items:center;gap:4px"><div class="ldot" style="background:#DBEAFE;border-color:#2563EB"></div>내 예약</div>
       <div style="display:flex;align-items:center;gap:4px"><div class="ldot" style="background:#FEF2F2;border-color:#FECACA"></div>타인 예약</div>
+      <div style="display:flex;align-items:center;gap:4px"><div class="ldot" style="background:#F1F5F9;border-color:#CBD5E1"></div>예약 불가</div>
     </div>
     <div id="spinner">데이터 불러오는 중...</div>
     <div class="rooms" id="rooms"></div>
@@ -120,11 +121,12 @@ var DB_URL = "https://dsat-meeting-room-default-rtdb.asia-southeast1.firebasedat
 var API_KEY = "AIzaSyA19p683iO6_oSsvU30oqVIfDUlv871B8w";
 
 var ROOMS = [
-  {id:"A", name:"회의실 A", cap:"8인실", color:"#2563EB", light:"#DBEAFE"},
-  {id:"B", name:"회의실 B", cap:"4인실", color:"#7C3AED", light:"#EDE9FE"},
-  {id:"C", name:"회의실 C", cap:"12인실", color:"#059669", light:"#D1FAE5"}
+  {id:"3", name:"회의실 3", cap:"", color:"#2563EB", light:"#DBEAFE", amOnly:false},
+  {id:"4", name:"회의실 4", cap:"", color:"#059669", light:"#D1FAE5", amOnly:false}
 ];
-var HOURS = [9,10,11,12,13,14,15,16,17,18];
+// 회의실 3: 오후(13시~)만 예약 가능
+ROOMS[0].pmOnly = true;
+var HOURS = [8,9,10,11,12,13,14,15,16,17];
 
 var userName="", selDate=today(), bookings={}, pending=null, pollTimer=null;
 
@@ -133,7 +135,7 @@ function pad(n){return String(n).padStart(2,"0");}
 function today(){var d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
 function dates7(){
   var arr=[],t=new Date();
-  for(var i=0;i<7;i++){var d=new Date(t);d.setDate(t.getDate()+i);arr.push(d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()));}
+  for(var i=0;i<60;i++){var d=new Date(t);d.setDate(t.getDate()+i);arr.push(d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()));}
   return arr;
 }
 function dateLabel(s){
@@ -210,6 +212,12 @@ function setStatus(ok){
 document.getElementById("ni").addEventListener("input",function(){
   document.getElementById("lb").disabled=!this.value.trim();
 });
+document.getElementById("ni").addEventListener("keyup",function(){
+  document.getElementById("lb").disabled=!this.value.trim();
+});
+document.getElementById("ni").addEventListener("change",function(){
+  document.getElementById("lb").disabled=!this.value.trim();
+});
 document.getElementById("ni").addEventListener("keydown",function(e){if(e.key==="Enter")login();});
 document.getElementById("lb").addEventListener("click",login);
 
@@ -258,22 +266,24 @@ function renderRooms(){
 
     var sw=document.createElement("div"); sw.className="slots";
     HOURS.forEach(function(h){
+      var blocked=room.pmOnly && h<13;
       var key=room.id+"_"+h;
       var bk=bookings[key]||null;
       var mine=bk&&bk.user===userName;
       var other=bk&&!mine;
-      var bg=mine?room.light:other?"#FEF2F2":"#F8FAFC";
-      var bc=mine?room.color:other?"#FECACA":"#E2E8F0";
-      var fc=mine?room.color:other?"#DC2626":"#475569";
+      var bg=blocked?"#F1F5F9":mine?room.light:other?"#FEF2F2":"#F8FAFC";
+      var bc=blocked?"#CBD5E1":mine?room.color:other?"#FECACA":"#E2E8F0";
+      var fc=blocked?"#CBD5E1":mine?room.color:other?"#DC2626":"#475569";
 
       var s=document.createElement("div"); s.className="slot";
       s.style.background=bg; s.style.borderColor=bc;
-      s.style.cursor=other?"default":"pointer";
-      s.title=bk?bk.user+"님 예약":"클릭하여 예약";
+      s.style.cursor=blocked||other?"default":"pointer";
+      s.title=blocked?"오후만 예약 가능":bk?bk.user+"님 예약":"클릭하여 예약";
       s.innerHTML='<div class="slot-h" style="color:'+fc+'">'+fmtH(h)+'</div>'
-        +(bk?'<div class="slot-u" style="color:'+fc+'">'+(mine?"내 예약":bk.user)+'</div>':"");
+        +(blocked?'<div class="slot-u" style="color:'+fc+'">오전불가</div>'
+          :bk?'<div class="slot-u" style="color:'+fc+'">'+(mine?"내 예약":bk.user)+'</div>':"");
 
-      if(!other){
+      if(!other&&!blocked){
         s.addEventListener("mouseenter",function(){if(!bk)s.style.background="#EFF6FF";});
         s.addEventListener("mouseleave",function(){if(!bk)s.style.background="#F8FAFC";});
         (function(r,hour,booking,isMine){
