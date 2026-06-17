@@ -54,6 +54,7 @@ main { max-width:900px; margin:0 auto; padding:18px 12px; }
 #toast { display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); color:#fff; padding:11px 20px; border-radius:10px; font-size:13px; font-weight:600; box-shadow:0 4px 20px rgba(0,0,0,.2); z-index:2000; white-space:nowrap; }
 footer { text-align:center; font-size:11px; color:#CBD5E1; margin-top:18px; padding-bottom:24px; }
 #spinner { text-align:center; padding:40px; color:#94A3B8; font-size:13px; }
+#credit { position:fixed; bottom:8px; right:12px; font-size:13px; color:#CBD5E1; z-index:50; }
 </style>
 </head>
 <body>
@@ -61,8 +62,8 @@ footer { text-align:center; font-size:11px; color:#CBD5E1; margin-top:18px; padd
 <div id="login-screen">
 <div class="login-card">
 <div style="font-size:36px">🏢</div>
-<h1>회의실 예약 시스템</h1>
-<p>이름을 입력하고 예약을 시작하세요</p>
+<h1>A조 회의실 예약</h1>
+<p>회의명을 입력하고 예약을 시작하세요</p>
 <input id="ni" type="text" placeholder="이름 입력" maxlength="20"/>
 <button id="lb">시작하기</button>
 </div>
@@ -107,6 +108,7 @@ footer { text-align:center; font-size:11px; color:#CBD5E1; margin-top:18px; padd
 </div>
 </div>
 <div id="toast"></div>
+<div id="credit">by kenkim · v1.0</div>
 
 <script>
 var DB_URL = "https://dsat-meeting-room-default-rtdb.asia-southeast1.firebasedatabase.app";
@@ -170,7 +172,7 @@ el.className = "badge " + (ok ? "ok" : "err");
 function fetchBookings(date, cb) {
 var xhr = new XMLHttpRequest();
 xhr.open("GET", DB_URL+"/bookings/"+date+".json?key="+API_KEY, true);
-xhr.onload = function() {
+xhr.ON-LOAD = function() {
 if (xhr.status === 200) {
 try { cb(null, JSON.parse(xhr.responseText) || {}); }
 catch(e) { cb(e, {}); }
@@ -178,7 +180,7 @@ catch(e) { cb(e, {}); }
 cb(new Error("HTTP "+xhr.status), {});
 }
 };
-xhr.onerror = function() { cb(new Error("Network error"), {}); };
+xhr.ON-ERROR = function() { cb(new Error("Network error"), {}); };
 xhr.send();
 }
 
@@ -191,10 +193,10 @@ xhr.open("DELETE", url, true);
 xhr.open("PUT", url, true);
 xhr.setRequestHeader("Content-Type","application/json");
 }
-xhr.onload = function() {
+xhr.ON-LOAD = function() {
 cb((xhr.status===200||xhr.status===204) ? null : new Error("HTTP "+xhr.status));
 };
-xhr.onerror = function() { cb(new Error("Network error")); };
+xhr.ON-ERROR = function() { cb(new Error("Network error")); };
 xhr.send(value===null ? null : JSON.stringify(value));
 }
 
@@ -229,12 +231,12 @@ buildTabs();
 startPoll();
 }
 
-document.getElementById("lb").onclick = login;
-document.getElementById("ni").onkeydown = function(e) {
+document.getElementById("lb").ON-CLICK = login;
+document.getElementById("ni").ON-KEY-DOWN = function(e) {
 if (e.key === "Enter") login();
 };
 
-document.getElementById("logoutBtn").onclick = function() {
+document.getElementById("logoutBtn").ON-CLICK = function() {
 stopPoll();
 userName = "";
 document.getElementById("app-screen").style.display = "none";
@@ -251,7 +253,7 @@ for (var i = 0; i < dates.length; i++) {
 var b = document.createElement("button");
 b.className = "dtab" + (d===selDate ? " active" : "");
 b.textContent = dateLabel(d);
-b.onclick = function() {
+b.ON-CLICK = function() {
 selDate = d;
 buildTabs();
 startPoll();
@@ -302,9 +304,9 @@ s.innerHTML = '<div class="slot-h" style="color:'+fc+'">'+fmtH(h)+'</div>'
 : bk ? '<div class="slot-u" style="color:'+fc+'">'+(mine?"내 예약":bk.user)+'</div>' : "");
 
 if (!blocked && !other) {
-s.onmouseover = function() { if (!bk) s.style.background="#EFF6FF"; };
-s.onmouseout = function() { if (!bk) s.style.background="#F8FAFC"; };
-s.onclick = function() { openModal(rm, h, bk, mine); };
+s.ON-MOUSEOVER = function() { if (!bk) s.style.background="#EFF6FF"; };
+s.ON-MOUSEOUT = function() { if (!bk) s.style.background="#F8FAFC"; };
+s.ON-CLICK = function() { openModal(rm, h, bk, mine); };
 }
 sw.appendChild(s);
 })(HOURS[hi], room);
@@ -333,9 +335,9 @@ document.getElementById("mbg").classList.remove("show");
 pending = null;
 }
 
-document.getElementById("mclose").onclick = closeModal;
-document.getElementById("mbg").onclick = function(e) { if(e.target===this) closeModal(); };
-document.getElementById("mconfirm").onclick = function() {
+document.getElementById("mclose").ON-CLICK = closeModal;
+document.getElementById("mbg").ON-CLICK = function(e) { if(e.target===this) closeModal(); };
+document.getElementById("mconfirm").ON-CLICK = function() {
 if (!pending) return;
 var type = pending.type;
 var room = pending.room;
